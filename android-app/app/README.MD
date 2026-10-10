@@ -1,25 +1,16 @@
-#  Introduction
-This is the Android App test code. You can use this Android project to access pubsub.
+# Introduction
+Android client sample that fetches short-lived OAuth2 tokens from `gcpauth` (with local token caching and automatic refresh) and publishes GA4-formatted analytics events to Cloud Pub/Sub using **HTTP transport-layer Gzip compression (`Content-Encoding: gzip`)**, streaming directly into BigQuery via a Pub/Sub BigQuery Subscription (`--use-table-schema`).
 
-# Clone the repo
-Clone the repo from Git.
+# Configuration (`ConfigConstant.java`)
+Update `ConfigConstant.java` with your `TOPIC`, `GCP_AUTH_URL`, `GCP_AUTH_TOKEN`, and `PROJECT_ID`:
+- `TOPIC`: Pub/Sub topic name (e.g. `wps-analytics-events`), subscribed by BigQuery Subscription `sub-wps-analytics-to-bq` (`vicdemo.wps_analytics.events_intraday`).
+- `GCP_AUTH_URL`: `https://<CLOUD_RUN_AUTH_URL>/v1/token`
+- `GCP_AUTH_TOKEN`: MD5 hex digest of `secret_key` configured in `gcpauth/conf/gcpauth.conf`.
+- `PROJECT_ID`: GCP project ID (e.g. `vicdemo`).
 
-# Change the configuration.
-Change the class ConfigConstant.java, update the Topic/GCP_AUTH_URL/GCP_AUTH_TOKEN/PROJECT_ID. 
-TOPIC: you can create a topic following the guide, https://cloud.google.com/pubsub/docs/create-topic
-GCP_AUTH URL: https://{AUTH URL}/v1/token/
-GCP_AUTH_TOKEN: Token is set to the MD5 value of secret_key in the Java project.
-PROJECT_ID: Use your own project id.
 ```java
-    //Change your topic.
-    String TOPIC = "{REPLACE YOUR TOPIC}";
-
-    //Change your own AUTH server URL
-    String GCP_AUTH_URL = "{REPLACE YOUR AUTH URL}";
-
-    //Change your own Auth TOKEN
-    String GCP_AUTH_TOKEN = "{REPLACE YOUR AUTH TOKEN}";
-
-    //change your own project id
-    String PROJECT_ID = "{REPLACE YOUR PROJECT ID}";
+    String TOPIC = "wps-analytics-events";
+    String GCP_AUTH_URL = "https://gcpauth-801959478639.us-central1.run.app/v1/token";
+    String GCP_AUTH_TOKEN = "776f9d813e3459f55eb9290aa169669c";
+    String PROJECT_ID = "vicdemo";
 ```

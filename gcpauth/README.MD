@@ -1,33 +1,28 @@
 # Introduction
-Create a project to generate GCP token
+`gcpauth` is a Spring Boot token-vending service that issues short-lived, narrow-scoped OAuth2 access tokens (`https://www.googleapis.com/auth/pubsub`) via Service Account Impersonation (`ImpersonatedCredentials`, with automatic fallback to scoped Application Default Credentials for local testing).
 
-# Clone the git
+# Service Account Setup
+1. **Cloud Run Runtime Service Account** (e.g. `firebase-adminsdk-vyd7s@vicdemo.iam.gserviceaccount.com`):
+   - Attached Role: `Service Account Token Creator` (`roles/iam.serviceAccountTokenCreator`)
+2. **Impersonated Target Service Account** (e.g. `801959478639-compute@developer.gserviceaccount.com`):
+   - Attached Role: `Pub/Sub Publisher` (`roles/pubsub.publisher` or `roles/pubsub.editor`)
 
-# Create a service account for Cloud Run to generate the access token.
-Service Account Create Guide: https://cloud.google.com/iam/docs/service-accounts-create
-Service Account attached Roles must have:
-Service Account Token Creator
-Service Account User
+# Configuration (`conf/gcpauth.conf` or Environment Variables)
+Update `conf/gcpauth.conf` (or override via environment variables `GCPAUTH_SECRET_KEY`, `GCPAUTH_IMPERSONATED_SA`, `GCPAUTH_ALLOWED_SCOPES`):
+- `secret_key`: Shared secret key; clients send `Authorization: Bearer <MD5(secret_key)>`.
+- `impersonated_service_account`: Target service account to impersonate for Pub/Sub publishing.
 
-# Create a service account impersonated to invoke pubsub
-Service Account attached Roles must have:
-Pub/Sub Publisher
-
-# Change the conf/gcpauth.conf file
-Update secret_key: change to your own key, and the md5 of this key will used for Android to invoke the app.
-impersonated_service_account: created above.
-
-# Deply app
-change the project id, and the service account url created above.
+# Deploy to Cloud Run
 ```bash
-gcloud run deploy \
-  --project {REPLACE YOUR PROJECT ID} \
+gcloud run deploy gcpauth \
+  --project=vicdemo \
   --source=. \
   --cpu=1 \
-  --memory=3096M \
+  --memory=1024Mi \
   --port=8080 \
   --region=us-central1 \
-  --max-instances=1 \
-  --min-instances=1 \
-  --service-account={REPLACE YOUR SERVICE ACCOUNT}
+  --max-instances=2 \
+  --min-instances=0 \
+  --allow-unauthenticated \
+  --service-account=firebase-adminsdk-vyd7s@vicdemo.iam.gserviceaccount.com
 ```

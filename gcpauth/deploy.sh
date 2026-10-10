@@ -1,10 +1,11 @@
-gcloud run deploy \
-  --project {REPLACE YOUR PROJECT ID} \
+gcloud run deploy gcpauth \
+  --project=vicdemo \
   --source=. \
   --cpu=1 \
-  --memory=3096M \
+  --memory=1024Mi \
   --port=8080 \
   --region=us-central1 \
-  --max-instances=1 \
-  --min-instances=1 \
-  --service-account={REPLACE YOUR SERVICE ACCOUNT}
+  --max-instances=2 \
+  --min-instances=0 \
+  --allow-unauthenticated \
+  --service-account=firebase-adminsdk-vyd7s@vicdemo.iam.gserviceaccount.com

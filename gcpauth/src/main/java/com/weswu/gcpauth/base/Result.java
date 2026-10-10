@@ -2,9 +2,6 @@ package com.weswu.gcpauth.base;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import lombok.Data;
-import lombok.SneakyThrows;
-
 import org.springframework.util.ObjectUtils;
 import java.text.MessageFormat;
 import java.io.Serializable;
@@ -13,8 +10,6 @@ import java.io.Serializable;
  * @author weswu
  * @date 2021/05/23
  */
-
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result<M> implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -22,9 +17,12 @@ public class Result<M> implements Serializable {
     private String error;
     private M data;
 
+    public Result() {
+    }
+
     public Result(M data, String status, String error) {
         if (ObjectUtils.isEmpty(status)) {
-            status = ResStatus.UNKOWN_ERROR.getError();
+            status = ResStatus.UNKOWN_ERROR.getStatus();
         }
         this.data = data;
         this.status = status;
@@ -34,7 +32,7 @@ public class Result<M> implements Serializable {
     public Result(GAException ex) {
         String exStatus = ex.getStatus();
         if (ObjectUtils.isEmpty(exStatus)) {
-            exStatus = ResStatus.UNKOWN_ERROR.getError();;
+            exStatus = ResStatus.UNKOWN_ERROR.getStatus();
         }
         this.status = exStatus;
         this.error = ex.getError();
@@ -61,9 +59,36 @@ public class Result<M> implements Serializable {
         this.error = MessageFormat.format(msgDefined.getError(), info);
     }
 
-    @SneakyThrows
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public M getData() {
+        return data;
+    }
+
+    public void setData(M data) {
+        this.data = data;
+    }
+
     @Override
     public String toString() {
-        return Json.encode(this);
+        try {
+            return Json.encode(this);
+        } catch (Exception e) {
+            return "{\"status\":\"" + status + "\",\"error\":\"" + error + "\"}";
+        }
     }
 }

@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private void initGrabber(){
         loadImageBtn = (Button) findViewById(R.id.images_button);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        this.displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(this.displayMetrics);
 
     }
 
@@ -47,6 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClickLoadImages(View view) {
-        new AsyncTaskPubsub().doInBackground("");
+        new AsyncTaskPubsub().execute("");
     }
 }

@@ -26,23 +26,34 @@ public class GAController {
     /* 获取google api的 access token */
     @SuppressWarnings("rawtypes")
     @PostMapping(value = { "/v1/token" })
-    public ResponseEntity<Result> get_access_token(@RequestHeader("Authorization") String gcpAuthToken, @RequestBody TokenReq tokenReq){
+    public ResponseEntity<Result> get_access_token(
+            @RequestHeader(value = "Authorization", required = false) String gcpAuthToken,
+            @RequestBody TokenReq tokenReq){
         Result loggedRes = null;
         ResponseEntity<Result> sentRes = null;
         try{
             AccessToken tokenRes = saTokenService.getAccessToken(gcpAuthToken, tokenReq);
             loggedRes = ResFactory.wrapper(tokenRes);
-            log.info(loggedRes.toString() + ", GUID:" + tokenReq.getGuid() + ".");
+            log.info(loggedRes.toString() + ", GUID:" + (tokenReq != null ? tokenReq.getGuid() : "") + ".");
             // return succeed
-            sentRes = new ResponseEntity<>(loggedRes, HttpStatus.valueOf(Integer.parseInt(loggedRes.getStatus())));
+            sentRes = new ResponseEntity<>(loggedRes, resolveHttpStatus(loggedRes.getStatus()));
             return sentRes;
         } catch (Exception e){
             //return error
             GAException gaException = Utils.format_exception(e);
-            loggedRes = ResFactory.wrapper(gaException, ", GUID:" + tokenReq.getGuid() + ".");
+            loggedRes = ResFactory.wrapper(gaException, ", GUID:" + (tokenReq != null ? tokenReq.getGuid() : "") + ".");
             log.error(loggedRes.toString());
-            sentRes = new ResponseEntity<>(loggedRes, HttpStatus.valueOf(Integer.parseInt(loggedRes.getStatus())));
+            sentRes = new ResponseEntity<>(loggedRes, resolveHttpStatus(loggedRes.getStatus()));
             return sentRes;
+        }
+    }
+
+    private HttpStatus resolveHttpStatus(String statusStr) {
+        try {
+            HttpStatus status = HttpStatus.resolve(Integer.parseInt(statusStr));
+            return status != null ? status : HttpStatus.INTERNAL_SERVER_ERROR;
+        } catch (Exception ignored) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         }
     }
 }
