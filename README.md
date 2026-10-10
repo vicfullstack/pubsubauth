@@ -6,33 +6,6 @@
 
 ![系统架构图](./docs/architecture.png)
 
-```mermaid
-flowchart LR
-    subgraph Client["客户端应用 (Android / iOS / Web)"]
-        SDK["埋点上报模块 (PubsubPublisher)\n(本地 Token 缓存 + 批量打包 + HTTP Gzip)"]
-    end
-
-    subgraph Auth["鉴权服务层 (Cloud Run)"]
-        GCPAuth["gcpauth 令牌签发服务\n(Guava TokenCache + IAM 服务账号模拟)"]
-        IAM["Google IAM Credentials API"]
-        GCPAuth -->|"缓存未命中时调用"| IAM
-    end
-
-    subgraph PubSub["消息接入层 (Cloud Pub/Sub)"]
-        Topic["Pub/Sub Topic\n(app-analytics-events)"]
-        BQSub["BigQuery Subscription\n(--use-table-schema --drop-unknown-fields)"]
-        Topic --> BQSub
-    end
-
-    subgraph BQ["数据仓库层 (BigQuery)"]
-        Table["分区聚簇事实表\n(兼容 GA4 嵌套 Schema)"]
-        BQSub -->|"Storage Write API 秒级直写"| Table
-    end
-
-    SDK -->|"1. 获取短效 Token\nPOST /v1/token"| GCPAuth
-    SDK -->|"2. 携带 Bearer Token 批量上报\nPOST .../topics/...:publish (Content-Encoding: gzip)"| Topic
-```
-
 ## 核心方案特性
 
 1. **客户端无密钥安全鉴权 (`gcpauth`)**：
