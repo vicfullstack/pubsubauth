@@ -1,8 +1,8 @@
 package com.weswu.pubsub;
 
 public interface ConfigConstant {
-    // Pub/Sub Topic in vicdemo connected to BigQuery Subscription (vicdemo.wps_analytics.events_intraday)
-    String TOPIC = "wps-analytics-events";
+    // Pub/Sub Topic in vicdemo connected to BigQuery Subscription (vicdemo.app_analytics.events_intraday)
+    String TOPIC = "app-analytics-events";
 
     // Cloud Run gcpauth Token Service URL in vicdemo
     String GCP_AUTH_URL = "https://gcpauth-801959478639.us-central1.run.app/v1/token";

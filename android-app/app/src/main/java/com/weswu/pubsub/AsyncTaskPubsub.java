@@ -22,7 +22,7 @@ public class AsyncTaskPubsub extends AsyncTask<String, Void, Void> {
         try {
             List<PubsubMessage> messages = new ArrayList<>();
             Map<String, String> attributes = new HashMap<>();
-            attributes.put("app_id", "cn.wps.moffice_eng");
+            attributes.put("app_id", "com.example.analytics.app");
             attributes.put("platform", "ANDROID");
             attributes.put("sdk_version", "2.1.0");
             PubsubMessage pubsubMessage = new PubsubMessage(Json.encode(buildTestData()), attributes);
@@ -45,7 +45,7 @@ public class AsyncTaskPubsub extends AsyncTask<String, Void, Void> {
         pubsubContent.put("event_name", "doc_open");
         pubsubContent.put("user_pseudo_id", UUID.randomUUID().toString());
         pubsubContent.put("platform", "ANDROID");
-        pubsubContent.put("stream_id", "android_wps_main");
+        pubsubContent.put("stream_id", "android_app_main");
         pubsubContent.put("time", nowMillis);
         pubsubContent.put("usage", "Test");
 
@@ -53,7 +53,7 @@ public class AsyncTaskPubsub extends AsyncTask<String, Void, Void> {
         Map<String, Object> docTypeParam = new HashMap<>();
         docTypeParam.put("key", "doc_type");
         Map<String, Object> docTypeVal = new HashMap<>();
-        docTypeVal.put("string_value", "writer");
+        docTypeVal.put("string_value", "document");
         docTypeParam.put("value", docTypeVal);
         eventParams.add(docTypeParam);
         pubsubContent.put("event_params", eventParams);
@@ -64,8 +64,8 @@ public class AsyncTaskPubsub extends AsyncTask<String, Void, Void> {
         pubsubContent.put("device", device);
 
         Map<String, Object> appInfo = new HashMap<>();
-        appInfo.put("id", "cn.wps.moffice_eng");
-        appInfo.put("version", "17.9.0");
+        appInfo.put("id", "com.example.analytics.app");
+        appInfo.put("version", "1.0.0");
         pubsubContent.put("app_info", appInfo);
 
         return pubsubContent;
